@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const path = require('path');
+const mongoSanitize = require('express-mongo-sanitize');
 require('dotenv').config()
 app.use(express.json())
 
-const userRoute = require('./route/user')
+const userRoute = require('./routes/user')
+const sauceRoute = require('./routes/sauce')
 
-mongoose.connect('mongodb+srv://' + process.env.MONGO_USERNAME + ':' + process.env.MONGO_PASSWORD + '@cluster0.dv1oho1.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGO_URI,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -21,6 +24,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/api', userRoute);
+app.use(mongoSanitize());
+
+app.use('/api/auth', userRoute);
+app.use('/api/sauces', sauceRoute)
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 module.exports = app;
