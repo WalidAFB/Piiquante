@@ -1,33 +1,46 @@
 const express = require('express');
-const app = express();
 const mongoose = require('mongoose');
-const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
-require('dotenv').config()
-app.use(express.json())
+const path = require('path');
+require('dotenv').config();
 
-const userRoute = require('./routes/user')
-const sauceRoute = require('./routes/sauce')
+const app = express();
+// middleware pour parser le body des requêtes en JSON
+app.use(express.json()); 
+ // importation des routes pour les utilisateurs
+const userRoute = require('./routes/user');
+// importation des routes pour les sauces
+const sauceRoute = require('./routes/sauce'); 
 
-mongoose.connect(process.env.MONGO_URI,
-    {
+// connexion à la base de données MongoDB
+mongoose
+    .connect(process.env.MONGO_URI, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
     })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Origin', '*'); // autoriser toutes les origines
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'
+    ); // autoriser certains en-têtes dans les requêtes
+    res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PUT, DELETE, PATCH, OPTIONS'
+    ); // autoriser certaines méthodes HTTP
     next();
 });
 
+// middleware pour éviter les injections dans les champs MongoDB
 app.use(mongoSanitize());
-
+ // route pour l'authentification des utilisateurs
 app.use('/api/auth', userRoute);
-app.use('/api/sauces', sauceRoute)
-app.use('/images', express.static(path.join(__dirname, 'images')));
+// route pour les opérations sur les sauces
+app.use('/api/sauces', sauceRoute); 
+// middleware pour servir les images dans la réponse
+app.use('/images', express.static(path.join(__dirname, 'images'))); 
 
 module.exports = app;

@@ -1,53 +1,45 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
+// Définition du schéma de la sauce
 const sauceSchema = new mongoose.Schema({
     userId: {
         type: String,
-        required: true
+        required: true,
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     manufacturer: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
-        required: true
+        required: true,
     },
     mainPepper: {
         type: String,
-        required: true
+        required: true,
     },
     imageUrl: {
-        type: String
+        type: String,
+        required: true,
     },
     heat: {
         type: Number,
         min: 1,
         max: 10,
-        required: true
-    },/*
-    likes: {
-        type: Number,
-        default: 0,
-        required: true
+        required: true,
     },
-    dislikes: {
-        type: Number,
-        default: 0,
-        required: true
-    },*/
     usersLiked: {
         type: [String],
-        required: true
+        required: true,
     },
     usersDisliked: {
         type: [String],
-        required: true
-    }
-});
+        required: true,
+    },
+})
 
-module.exports = mongoose.model('Sauce', sauceSchema);
+module.exports = mongoose.model('Sauce', sauceSchema)
